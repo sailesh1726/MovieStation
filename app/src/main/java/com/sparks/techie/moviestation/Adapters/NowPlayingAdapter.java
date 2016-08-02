@@ -4,11 +4,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.sparks.techie.moviestation.Model.ResultsNowPlaying;
 import com.sparks.techie.moviestation.R;
 import com.sparks.techie.moviestation.Util.Constants;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
  */
 
 public class NowPlayingAdapter extends RecyclerView.Adapter<NowPlayingAdapter.ViewHolder> {
-    private final ArrayList<ResultsNowPlaying> resultsNowPlaying;
+    private ArrayList<ResultsNowPlaying> resultsNowPlaying;
 
 public NowPlayingAdapter(ArrayList<ResultsNowPlaying> resultsNowPlaying){
     this.resultsNowPlaying=resultsNowPlaying;
@@ -36,24 +35,15 @@ public NowPlayingAdapter(ArrayList<ResultsNowPlaying> resultsNowPlaying){
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.nowPlayingTextView.setText(resultsNowPlaying.get(position).getTitle());
+        if(resultsNowPlaying!=null) {
+            holder.nowPlayingTextView.setText(resultsNowPlaying.get(position).getTitle());
 
-        String poster_path = resultsNowPlaying.get(position).getPoster_path();
-        String url = Constants.IMAGE_BASE_URL+poster_path;
-        ImageLoader imageLoader = VolleyTon.getInstance().getImageLoader();
+            String poster_path = resultsNowPlaying.get(position).getPoster_path();
+            String url = Constants.IMAGE_BASE_URL + poster_path;
+            ImageLoader imageLoader = VolleyTon.getInstance().getImageLoader();
 
-        imageLoader.get(url, new ImageLoader.ImageListener() {
-            @Override
-            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                holder.nowPlayingImageView.setImageBitmap(response.getBitmap());
-            }
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //TODO:
-                //holder.nowPlayingImageView.setImageBitmap();
-            }
-        });
+            holder.nowPlayingImageView.setImageUrl(url, imageLoader);
+        }
     }
 
     @Override
@@ -61,17 +51,20 @@ public NowPlayingAdapter(ArrayList<ResultsNowPlaying> resultsNowPlaying){
         return resultsNowPlaying.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public void updateNowPlaying(ArrayList<ResultsNowPlaying> resultsNowPlaying){
+        this.resultsNowPlaying.addAll(resultsNowPlaying);
+        notifyDataSetChanged();
+    }
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView nowPlayingImageView;
+        private NetworkImageView nowPlayingImageView;
         private TextView nowPlayingTextView;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             nowPlayingTextView =(TextView)itemView.findViewById(R.id.nowPlayingTextView);
-            nowPlayingImageView =(ImageView)itemView.findViewById(R.id.nowPlayingImageView);
+            nowPlayingImageView =(NetworkImageView) itemView.findViewById(R.id.nowPlayingImageView);
         }
-        // each data item is just a string in this case
 
     }
 }

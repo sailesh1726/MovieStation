@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class NowPlaying {
     private String page;
     private ArrayList<ResultsNowPlaying> results;
-   // private Dates dates;
+    private int total_pages;
 
 
     public String getPage() {
@@ -18,5 +18,9 @@ public class NowPlaying {
 
     public ArrayList<ResultsNowPlaying> getResults() {
         return results;
+    }
+
+    public int getTotal_pages() {
+        return total_pages;
     }
 }

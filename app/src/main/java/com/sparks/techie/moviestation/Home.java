@@ -1,6 +1,5 @@
 package com.sparks.techie.moviestation;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,16 +9,22 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
+import com.sparks.techie.moviestation.Adapters.EndlessRecyclerOnScrollListener;
 import com.sparks.techie.moviestation.Adapters.NowPlayingAdapter;
 import com.sparks.techie.moviestation.Model.NowPlaying;
-import com.sparks.techie.moviestation.Util.Constants;
+import com.sparks.techie.moviestation.Model.ResultsNowPlaying;
+import com.sparks.techie.moviestation.Util.UriBuilderUtil;
 import com.sparks.techie.moviestation.Util.VolleyTon;
+
+import java.util.ArrayList;
 
 public class Home extends BaseActivity {
 
     private RecyclerView mRecyclerView;
     private NowPlayingAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
+    private int totalNumberOfPages=0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,27 +34,30 @@ public class Home extends BaseActivity {
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new NowPlayingAdapter(new ArrayList<ResultsNowPlaying>());
 
-        fetchLatestMovieData();
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(mLayoutManager) {
+            @Override
+            protected void loadMore(int pageNumber) {
+                if(pageNumber!=totalNumberOfPages){
+                    fetchLatestMovieData(pageNumber);
+                }
+            }
+        });
+
+        fetchLatestMovieData(1);
     }
 
-    private void fetchLatestMovieData() {
-        Uri.Builder builder= new Uri.Builder();
-
-        builder.scheme("https")
-                .authority("api.themoviedb.org")
-                .appendPath("3")
-                .appendPath("movie")
-                .appendPath("now_playing")
-                .appendQueryParameter("api_key",Constants.API_KEY);
-        String url=builder.build().toString();
+    private void fetchLatestMovieData(int pageNumber) {
+        String url = UriBuilderUtil.getURLForNowPlayingWithPageNumber(pageNumber);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Gson gson= new Gson();
                 NowPlaying nowPlaying= gson.fromJson(response,NowPlaying.class);
-                mAdapter= new NowPlayingAdapter(nowPlaying.getResults());
-                mRecyclerView.setAdapter(mAdapter);
+                mAdapter.updateNowPlaying(nowPlaying.getResults());
+                totalNumberOfPages=nowPlaying.getTotal_pages();
             }
         }, new Response.ErrorListener() {
             @Override
