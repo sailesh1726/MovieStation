@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.sparks.techie.moviestation.Home;
 import com.sparks.techie.moviestation.Model.ResultsNowPlaying;
 import com.sparks.techie.moviestation.R;
 import com.sparks.techie.moviestation.Util.Constants;
@@ -20,10 +21,12 @@ import java.util.ArrayList;
  */
 
 public class NowPlayingAdapter extends RecyclerView.Adapter<NowPlayingAdapter.ViewHolder> {
+    private Home.MovieStationOnClickListener movieStationOnClickListener;
     private ArrayList<ResultsNowPlaying> resultsNowPlaying;
 
-public NowPlayingAdapter(ArrayList<ResultsNowPlaying> resultsNowPlaying){
+public NowPlayingAdapter(ArrayList<ResultsNowPlaying> resultsNowPlaying, Home.MovieStationOnClickListener movieStationOnClickListener){
     this.resultsNowPlaying=resultsNowPlaying;
+    this.movieStationOnClickListener=movieStationOnClickListener;
 }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -34,7 +37,7 @@ public NowPlayingAdapter(ArrayList<ResultsNowPlaying> resultsNowPlaying){
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         if(resultsNowPlaying!=null) {
             holder.nowPlayingTextView.setText(resultsNowPlaying.get(position).getTitle());
 
@@ -43,6 +46,13 @@ public NowPlayingAdapter(ArrayList<ResultsNowPlaying> resultsNowPlaying){
             ImageLoader imageLoader = VolleyTon.getInstance().getImageLoader();
 
             holder.nowPlayingImageView.setImageUrl(url, imageLoader);
+            holder.nowPlayingImageView.setErrorImageResId(R.drawable.now_playing_place_holder);
+            holder.nowPlayingImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    movieStationOnClickListener.onClick(position,resultsNowPlaying.get(position));
+                }
+            });
         }
     }
 

@@ -5,11 +5,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.sparks.techie.moviestation.Home">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:text="Now Playing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nowPlayingTitleTextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:fontFamily="sans-serif"
+        android:textStyle="normal|bold|italic"
+        android:textAllCaps="true"
+        android:textColor="@color/SaddleBrown"
+        android:background="@color/BlanchedAlmond"/>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nowPlayingProgressBar" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/latest_movies_carousel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        tools:layout_editor_absoluteY="0dp"
+        android:visibility="gone"/>
+</LinearLayout>
 </android.support.constraint.ConstraintLayout>

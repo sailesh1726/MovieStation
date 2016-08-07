@@ -3,6 +3,9 @@ package com.sparks.techie.moviestation;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -24,6 +27,8 @@ public class Home extends BaseActivity {
     private NowPlayingAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     private int totalNumberOfPages=0;
+    private MovieStationOnClickListener movieStationOnClickListener;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -31,10 +36,19 @@ public class Home extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mRecyclerView = (RecyclerView) findViewById(R.id.latest_movies_carousel);
+        progressBar = (ProgressBar) findViewById(R.id.nowPlayingProgressBar);
+        progressBar.setIndeterminate(true);
+
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new NowPlayingAdapter(new ArrayList<ResultsNowPlaying>());
+        movieStationOnClickListener = new MovieStationOnClickListener() {
+            @Override
+            public void onClick(int position, ResultsNowPlaying resultsNowPlaying) {
+                Toast.makeText(getApplicationContext(),position+resultsNowPlaying.getTitle(),Toast.LENGTH_SHORT).show();
+            }
+        };
+        mAdapter = new NowPlayingAdapter(new ArrayList<ResultsNowPlaying>(),movieStationOnClickListener);
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(mLayoutManager) {
@@ -58,13 +72,21 @@ public class Home extends BaseActivity {
                 NowPlaying nowPlaying= gson.fromJson(response,NowPlaying.class);
                 mAdapter.updateNowPlaying(nowPlaying.getResults());
                 totalNumberOfPages=nowPlaying.getTotal_pages();
+                progressBar.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                error.getNetworkTimeMs();
+                progressBar.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+
             }
         });
         VolleyTon.getInstance().addToRequestQueue(stringRequest);
+    }
+
+    public interface MovieStationOnClickListener{
+     void onClick(int position,ResultsNowPlaying resultsNowPlaying);
     }
 }
