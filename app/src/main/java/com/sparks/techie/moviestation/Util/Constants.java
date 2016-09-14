@@ -18,5 +18,12 @@ public class Constants {
 
     //PreferenceHelper file name
     public static final String PREFERENCES_FILE = "MovieStation";
+
+
+    //Budle Constants
+    public static final String MOVIE_ID = "movieId";
+
+    //YouTube API Key
+    public static final String YOUBUE_API_KEY = "AIzaSyDHuWEi2UyokbPLQEZ5ykY62hR6m2j1gfg";
 }
 

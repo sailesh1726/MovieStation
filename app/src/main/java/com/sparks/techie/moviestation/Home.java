@@ -1,11 +1,11 @@
 package com.sparks.techie.moviestation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -16,6 +16,7 @@ import com.sparks.techie.moviestation.Adapters.EndlessRecyclerOnScrollListener;
 import com.sparks.techie.moviestation.Adapters.NowPlayingAdapter;
 import com.sparks.techie.moviestation.Model.NowPlaying;
 import com.sparks.techie.moviestation.Model.ResultsNowPlaying;
+import com.sparks.techie.moviestation.Util.Constants;
 import com.sparks.techie.moviestation.Util.UriBuilderUtil;
 import com.sparks.techie.moviestation.Util.VolleyTon;
 
@@ -45,7 +46,9 @@ public class Home extends BaseActivity {
         movieStationOnClickListener = new MovieStationOnClickListener() {
             @Override
             public void onClick(int position, ResultsNowPlaying resultsNowPlaying) {
-                Toast.makeText(getApplicationContext(),position+resultsNowPlaying.getTitle(),Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Home.this,MovieDetailsActivity.class);
+                intent.putExtra(Constants.MOVIE_ID,resultsNowPlaying.getId());
+                startActivity(intent);
             }
         };
         mAdapter = new NowPlayingAdapter(new ArrayList<ResultsNowPlaying>(),movieStationOnClickListener);

@@ -33,4 +33,18 @@ public class UriBuilderUtil {
 
         return builder.build().toString();
     }
+
+    public static String getURLForMovieDetailsWithID(int id){
+        Uri.Builder builder= new Uri.Builder();
+
+        builder.scheme("https")
+                .authority("api.themoviedb.org")
+                .appendPath("3")
+                .appendPath("movie")
+                .appendPath(id+"")
+                .appendQueryParameter("api_key",Constants.API_KEY)
+                .appendQueryParameter("append_to_response","images,videos");
+
+        return builder.build().toString();
+    }
 }
